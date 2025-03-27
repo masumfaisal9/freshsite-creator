@@ -378,7 +378,7 @@ const ProductDetails = () => {
                 {Object.entries(product.nutritionInfo).map(([key, value]) => (
                   <div key={key} className="border border-gray-100 p-4 rounded-lg">
                     <span className="text-gray-500 text-sm capitalize">{key}</span>
-                    <p className="font-semibold text-gray-800">{value}</p>
+                    <p className="font-semibold text-gray-800">{String(value)}</p>
                   </div>
                 ))}
               </div>
