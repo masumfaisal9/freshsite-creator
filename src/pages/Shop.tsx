@@ -14,84 +14,84 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 // Sample product data
 const products = [
   {
-    id: 1,
+    id: "1",
     name: "Fresh Organic Apples",
     price: 5.99,
-    unit: "kg",
+    originalPrice: 6.99,
     image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     category: "Fruits",
-    discount: 10,
-    rating: 4.8,
+    isNew: true,
+    isSale: false,
   },
   {
-    id: 2,
+    id: "2",
     name: "Organic Carrots",
     price: 3.49,
-    unit: "kg",
+    originalPrice: null,
     image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     category: "Vegetables",
-    discount: 0,
-    rating: 4.5,
+    isNew: false,
+    isSale: false,
   },
   {
-    id: 3,
+    id: "3",
     name: "Free Range Eggs",
     price: 4.99,
-    unit: "dozen",
+    originalPrice: 5.99,
     image: "https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
     category: "Dairy & Eggs",
-    discount: 0,
-    rating: 4.9,
+    isNew: false,
+    isSale: true,
   },
   {
-    id: 4,
+    id: "4",
     name: "Fresh Chicken Breast",
     price: 12.99,
-    unit: "kg",
+    originalPrice: 14.99,
     image: "https://images.unsplash.com/photo-1604503468506-a8da13d82791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     category: "Meat & Fish",
-    discount: 15,
-    rating: 4.7,
+    isNew: false,
+    isSale: true,
   },
   {
-    id: 5,
+    id: "5",
     name: "Organic Spinach",
     price: 2.99,
-    unit: "bunch",
+    originalPrice: null,
     image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
     category: "Vegetables",
-    discount: 0,
-    rating: 4.6,
+    isNew: true,
+    isSale: false,
   },
   {
-    id: 6,
+    id: "6",
     name: "Whole Grain Bread",
     price: 3.99,
-    unit: "loaf",
+    originalPrice: null,
     image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1744&q=80",
     category: "Bakery",
-    discount: 0,
-    rating: 4.4,
+    isNew: false,
+    isSale: false,
   },
   {
-    id: 7,
+    id: "7",
     name: "Atlantic Salmon",
     price: 18.99,
-    unit: "kg",
+    originalPrice: 21.99,
     image: "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     category: "Meat & Fish",
-    discount: 5,
-    rating: 4.9,
+    isNew: false,
+    isSale: true,
   },
   {
-    id: 8,
+    id: "8",
     name: "Organic Avocados",
     price: 6.99,
-    unit: "pack",
+    originalPrice: null,
     image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1168&q=80",
     category: "Fruits",
-    discount: 0,
-    rating: 4.7,
+    isNew: true,
+    isSale: false,
   },
 ];
 
@@ -401,14 +401,14 @@ const Shop = () => {
                   {sortedProducts.map((product) => (
                     <ProductCard
                       key={product.id}
-                      id={product.id.toString()}
-                      title={product.name}
+                      id={product.id}
+                      name={product.name}
                       price={product.price}
+                      originalPrice={product.originalPrice || undefined}
                       image={product.image}
-                      unit={product.unit}
-                      discount={product.discount}
                       category={product.category}
-                      rating={product.rating}
+                      isNew={product.isNew || false}
+                      isSale={product.isSale || false}
                     />
                   ))}
                 </div>

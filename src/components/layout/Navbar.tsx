@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,9 +22,17 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
+
+  // Sample cart items count - in a real app, this would come from a cart context/state
+  const cartItemsCount = 2;
 
   return (
     <header 
@@ -48,27 +57,53 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className="text-gray-700 hover:text-fresh-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                location.pathname === '/' 
+                  ? 'text-fresh-600' 
+                  : 'text-gray-700 hover:text-fresh-600'
+              }`}
             >
               Home
             </Link>
             <Link 
               to="/shop" 
-              className="text-gray-700 hover:text-fresh-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                location.pathname === '/shop' 
+                  ? 'text-fresh-600' 
+                  : 'text-gray-700 hover:text-fresh-600'
+              }`}
             >
               Shop
             </Link>
             <Link 
               to="/about" 
-              className="text-gray-700 hover:text-fresh-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                location.pathname === '/about' 
+                  ? 'text-fresh-600' 
+                  : 'text-gray-700 hover:text-fresh-600'
+              }`}
             >
               About
             </Link>
             <Link 
               to="/contact" 
-              className="text-gray-700 hover:text-fresh-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                location.pathname === '/contact' 
+                  ? 'text-fresh-600' 
+                  : 'text-gray-700 hover:text-fresh-600'
+              }`}
             >
               Contact
+            </Link>
+            <Link 
+              to="/faq" 
+              className={`transition-colors font-medium ${
+                location.pathname === '/faq' 
+                  ? 'text-fresh-600' 
+                  : 'text-gray-700 hover:text-fresh-600'
+              }`}
+            >
+              FAQ
             </Link>
           </nav>
 
@@ -77,12 +112,14 @@ const Navbar = () => {
             <button className="text-gray-700 hover:text-fresh-600 transition-colors">
               <Search className="w-5 h-5" />
             </button>
-            <button className="text-gray-700 hover:text-fresh-600 transition-colors relative">
+            <Link to="/cart" className="text-gray-700 hover:text-fresh-600 transition-colors relative">
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-2 -right-2 bg-fresh-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </span>
-            </button>
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-fresh-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </Link>
             <button className="text-gray-700 hover:text-fresh-600 transition-colors">
               <User className="w-5 h-5" />
             </button>
@@ -94,12 +131,22 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-gray-700"
-            onClick={toggleMobileMenu}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="md:hidden flex items-center space-x-3">
+            <Link to="/cart" className="text-gray-700 hover:text-fresh-600 transition-colors relative mr-2">
+              <ShoppingCart className="w-5 h-5" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-fresh-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </Link>
+            <button 
+              className="text-gray-700"
+              onClick={toggleMobileMenu}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -110,41 +157,57 @@ const Navbar = () => {
             <nav className="flex flex-col space-y-4">
               <Link 
                 to="/" 
-                className="text-gray-700 hover:text-fresh-600 transition-colors font-medium py-2"
-                onClick={() => setMobileMenuOpen(false)}
+                className={`font-medium py-2 ${
+                  location.pathname === '/' 
+                    ? 'text-fresh-600' 
+                    : 'text-gray-700 hover:text-fresh-600'
+                }`}
               >
                 Home
               </Link>
               <Link 
                 to="/shop" 
-                className="text-gray-700 hover:text-fresh-600 transition-colors font-medium py-2"
-                onClick={() => setMobileMenuOpen(false)}
+                className={`font-medium py-2 ${
+                  location.pathname === '/shop' 
+                    ? 'text-fresh-600' 
+                    : 'text-gray-700 hover:text-fresh-600'
+                }`}
               >
                 Shop
               </Link>
               <Link 
                 to="/about" 
-                className="text-gray-700 hover:text-fresh-600 transition-colors font-medium py-2"
-                onClick={() => setMobileMenuOpen(false)}
+                className={`font-medium py-2 ${
+                  location.pathname === '/about' 
+                    ? 'text-fresh-600' 
+                    : 'text-gray-700 hover:text-fresh-600'
+                }`}
               >
                 About
               </Link>
               <Link 
                 to="/contact" 
-                className="text-gray-700 hover:text-fresh-600 transition-colors font-medium py-2"
-                onClick={() => setMobileMenuOpen(false)}
+                className={`font-medium py-2 ${
+                  location.pathname === '/contact' 
+                    ? 'text-fresh-600' 
+                    : 'text-gray-700 hover:text-fresh-600'
+                }`}
               >
                 Contact
+              </Link>
+              <Link 
+                to="/faq" 
+                className={`font-medium py-2 ${
+                  location.pathname === '/faq' 
+                    ? 'text-fresh-600' 
+                    : 'text-gray-700 hover:text-fresh-600'
+                }`}
+              >
+                FAQ
               </Link>
               <div className="flex items-center space-x-4 pt-2">
                 <button className="text-gray-700 hover:text-fresh-600 transition-colors">
                   <Search className="w-5 h-5" />
-                </button>
-                <button className="text-gray-700 hover:text-fresh-600 transition-colors relative">
-                  <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-2 -right-2 bg-fresh-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    0
-                  </span>
                 </button>
                 <button className="text-gray-700 hover:text-fresh-600 transition-colors">
                   <User className="w-5 h-5" />
