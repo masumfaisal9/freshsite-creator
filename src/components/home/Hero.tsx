@@ -62,20 +62,11 @@ const Hero = () => {
       <div className="container mx-auto px-4 md:px-6 relative z-20 h-full flex items-center">
         <div className="max-w-3xl">
           <div className="bg-white/10 backdrop-blur-sm p-8 md:p-12 rounded-2xl">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block bg-fresh-500 text-white px-4 py-1 rounded-full text-sm font-medium mb-4"
-            >
-              100% Organic & Fresh
-            </motion.span>
-            
             <motion.h1
               key={`title-${currentSlide}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 text-shadow"
             >
               {slides[currentSlide].title}
