@@ -9,21 +9,18 @@ const Hero = () => {
   
   const slides = [
     {
-      title: "Fresh & Organic Food",
       subtitle: "Delivered to Your Doorstep",
       description: "Experience the best quality organic fruits and vegetables delivered fresh from farm to your table.",
       image: "https://images.unsplash.com/photo-1626198226928-85ae4f20a1c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       cta: "Shop Now"
     },
     {
-      title: "Premium Quality Meat & Fish",
       subtitle: "Fresh From The Source",
       description: "Enjoy premium quality meat and fish products that are sourced responsibly and delivered fresh.",
       image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       cta: "Explore"
     },
     {
-      title: "Daily Fresh Dairy Products",
       subtitle: "100% Pure & Natural",
       description: "Our dairy products are made from 100% pure milk, ensuring you get the best quality and taste.",
       image: "https://images.unsplash.com/photo-1628688346399-5a21a76fa7c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
@@ -52,7 +49,7 @@ const Hero = () => {
           <div className="absolute inset-0 bg-black/30 z-10" />
           <img
             src={slide.image}
-            alt={slide.title}
+            alt={slide.subtitle}
             className="w-full h-full object-cover"
           />
         </div>
@@ -69,18 +66,8 @@ const Hero = () => {
               transition={{ duration: 0.5 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 text-shadow"
             >
-              {slides[currentSlide].title}
-            </motion.h1>
-            
-            <motion.h2
-              key={`subtitle-${currentSlide}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white mb-4 text-shadow"
-            >
               {slides[currentSlide].subtitle}
-            </motion.h2>
+            </motion.h1>
             
             <motion.p
               key={`desc-${currentSlide}`}
