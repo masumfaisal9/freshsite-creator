@@ -7,6 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
+import ProductGallery from "@/components/product/ProductGallery";
+import ProductReviews from "@/components/product/ProductReviews";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 
 // Sample products for related products section
@@ -79,6 +83,29 @@ const productsDatabase = [
     weight: "1kg",
     farm: "Green Valley Orchards",
     origin: "Washington, USA",
+    thumbnails: [
+      "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+      "https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+      "https://images.unsplash.com/photo-1579613832125-5d34a13ffe2a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+    ],
+    reviews: [
+      {
+        id: "rev1",
+        user: "John D.",
+        rating: 5,
+        title: "Fresh and delicious!",
+        comment: "These are the best I've ever tasted. Extremely fresh and sweet. Will definitely buy again!",
+        date: "2023-05-15"
+      },
+      {
+        id: "rev2",
+        user: "Sarah M.",
+        rating: 4,
+        title: "Great quality",
+        comment: "Very fresh and high quality. Delivery was prompt and everything arrived in perfect condition.",
+        date: "2023-04-28"
+      }
+    ]
   },
   {
     id: "2",
@@ -104,7 +131,22 @@ const productsDatabase = [
     weight: "500g",
     farm: "Sunshine Organic Farm",
     origin: "California, USA",
-  },
+    thumbnails: [
+      "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+      "https://images.unsplash.com/photo-1447175008436-054170c2e979?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+      "https://images.unsplash.com/photo-1590165482129-1b8b27698780?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
+    ],
+    reviews: [
+      {
+        id: "rev3",
+        user: "Michael T.",
+        rating: 5,
+        title: "Super fresh!",
+        comment: "The carrots were incredibly fresh and flavorful. My kids love them as snacks!",
+        date: "2023-06-10"
+      }
+    ]
+  }
   // More products can be added as needed
 ];
 
@@ -113,7 +155,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   useEffect(() => {
     // Simulate fetching product details from API
@@ -124,7 +167,6 @@ const ProductDetails = () => {
       setProduct(foundProduct);
       // Reset state when product changes
       setQuantity(1);
-      setIsFavorite(false);
     }
     
     setLoading(false);
@@ -146,23 +188,25 @@ const ProductDetails = () => {
   };
 
   const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    
-    if (!isFavorite) {
-      toast("Added to wishlist", {
-        description: `${product?.name} has been added to your wishlist`,
-      });
-    } else {
-      toast("Removed from wishlist", {
-        description: `${product?.name} has been removed from your wishlist`,
-      });
+    if (product) {
+      if (isInWishlist(product.id)) {
+        removeFromWishlist(product.id, product.name);
+      } else {
+        addToWishlist(product.id, product.name);
+      }
     }
   };
 
-  const addToCart = () => {
-    toast("Added to cart", {
-      description: `${quantity} × ${product?.name} added to your cart`,
-    });
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: quantity,
+        image: product.image
+      });
+    }
   };
 
   if (loading) {
@@ -231,26 +275,12 @@ const ProductDetails = () => {
 
           {/* Product Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-            {/* Product Image */}
-            <div className="relative overflow-hidden rounded-xl">
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                {product.isNew && (
-                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                    New
-                  </span>
-                )}
-                {product.isSale && (
-                  <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                    Sale
-                  </span>
-                )}
-              </div>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-[500px] object-cover object-center rounded-xl"
-              />
-            </div>
+            {/* Product Image Gallery */}
+            <ProductGallery 
+              mainImage={product.image} 
+              thumbnails={product.thumbnails} 
+              productName={product.name} 
+            />
 
             {/* Product Info */}
             <div>
@@ -338,7 +368,7 @@ const ProductDetails = () => {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
-                  onClick={addToCart}
+                  onClick={handleAddToCart}
                   className="flex-1 bg-fresh-600 hover:bg-fresh-700 text-white px-8 py-3 rounded-full flex items-center justify-center gap-2"
                   disabled={product.stock <= 0}
                 >
@@ -349,10 +379,10 @@ const ProductDetails = () => {
                   onClick={toggleFavorite}
                   variant="outline"
                   className={`rounded-full px-4 py-3 flex items-center justify-center ${
-                    isFavorite ? "bg-red-50 border-red-200 text-red-500" : ""
+                    isInWishlist(product.id) ? "bg-red-50 border-red-200 text-red-500" : ""
                   }`}
                 >
-                  <Heart className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} />
+                  <Heart className="w-5 h-5" fill={isInWishlist(product.id) ? "currentColor" : "none"} />
                 </Button>
               </div>
             </div>
@@ -384,52 +414,10 @@ const ProductDetails = () => {
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="bg-white p-6 rounded-lg border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold">Customer Reviews</h3>
-                <Button variant="outline" className="rounded-full">Write a Review</Button>
-              </div>
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row gap-4 border-b border-gray-100 pb-6">
-                  <div className="sm:w-1/4">
-                    <p className="font-medium text-gray-800">John D.</p>
-                    <div className="flex mt-1 mb-2">
-                      {Array(5).fill(0).map((_, i) => (
-                        <Star 
-                          key={i}
-                          className={`w-4 h-4 ${i < 5 ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-gray-500 text-sm">Posted on May 15, 2023</p>
-                  </div>
-                  <div className="sm:w-3/4">
-                    <p className="font-medium text-gray-800 mb-2">Fresh and delicious!</p>
-                    <p className="text-gray-600">
-                      These are the best I've ever tasted. Extremely fresh and sweet. Will definitely buy again!
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 border-b border-gray-100 pb-6">
-                  <div className="sm:w-1/4">
-                    <p className="font-medium text-gray-800">Sarah M.</p>
-                    <div className="flex mt-1 mb-2">
-                      {Array(5).fill(0).map((_, i) => (
-                        <Star 
-                          key={i}
-                          className={`w-4 h-4 ${i < 4 ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-gray-500 text-sm">Posted on April 28, 2023</p>
-                  </div>
-                  <div className="sm:w-3/4">
-                    <p className="font-medium text-gray-800 mb-2">Great quality</p>
-                    <p className="text-gray-600">
-                      Very fresh and high quality. Delivery was prompt and everything arrived in perfect condition.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <ProductReviews 
+                productId={product.id} 
+                initialReviews={product.reviews || []} 
+              />
             </TabsContent>
           </Tabs>
 

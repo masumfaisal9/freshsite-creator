@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingCart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 interface ProductCardProps {
   id: string;
@@ -26,12 +28,33 @@ const ProductCard = ({
   isSale = false,
 }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  
+  const isFavorite = isInWishlist(id);
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    
+    if (isFavorite) {
+      removeFromWishlist(id, name);
+    } else {
+      addToWishlist(id, name);
+    }
+  };
+  
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    addToCart({
+      id,
+      name,
+      price,
+      quantity: 1,
+      image
+    });
   };
 
   return (
@@ -107,6 +130,7 @@ const ProductCard = ({
         <div className="mt-4 flex items-center justify-between">
           <Button 
             className="w-full bg-fresh-600 hover:bg-fresh-700 text-white rounded-full flex items-center justify-center gap-2 py-2 transition-all btn-hover"
+            onClick={handleAddToCart}
           >
             <ShoppingCart className="w-4 h-4" />
             <span>Add to Cart</span>
