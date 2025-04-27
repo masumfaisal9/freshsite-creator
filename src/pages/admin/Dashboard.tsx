@@ -1,14 +1,12 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductsManager from "@/components/admin/ProductsManager";
 import CategoriesManager from "@/components/admin/CategoriesManager";
-import { AlertCircle, Home, Package, LogOut } from "lucide-react";
+import OrdersManager from "@/components/admin/OrdersManager";
+import { AlertCircle, Home, Package, LogOut, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, Link, useNavigate } from "react-router-dom";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 const Dashboard = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -67,6 +65,12 @@ const Dashboard = () => {
               </Link>
             </Button>
             <Button variant="ghost" className="w-full justify-start" asChild>
+              <Link to="/admin">
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Orders
+              </Link>
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" asChild>
               <Link to="/">
                 <Home className="mr-2 h-5 w-5" />
                 Visit Store
@@ -78,13 +82,14 @@ const Dashboard = () => {
         <main className="flex-1 p-6">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your store's products and categories</p>
+            <p className="text-muted-foreground">Manage your store's products, categories, and orders</p>
           </div>
 
           <Tabs defaultValue="products" className="space-y-4">
             <TabsList>
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="categories">Categories</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
             </TabsList>
 
             <TabsContent value="products">
@@ -94,11 +99,13 @@ const Dashboard = () => {
             <TabsContent value="categories">
               <CategoriesManager />
             </TabsContent>
+
+            <TabsContent value="orders">
+              <OrdersManager />
+            </TabsContent>
           </Tabs>
         </main>
       </div>
-      
-      <Footer />
     </div>
   );
 };
