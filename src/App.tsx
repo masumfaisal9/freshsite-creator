@@ -21,6 +21,7 @@ import Register from "./pages/Register";
 import Account from "./pages/Account";
 import Wishlist from "./pages/Wishlist";
 import OrderSuccess from "./pages/OrderSuccess";
+import Dashboard from "./pages/admin/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +48,7 @@ const App = () => (
                 <Route path="/account" element={<Account />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="/admin" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
