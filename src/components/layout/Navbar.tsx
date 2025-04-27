@@ -1,13 +1,15 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, User, Menu, X, Search } from "lucide-react";
+import { ShoppingCart, User, Menu, X, Search, LogIn, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,13 +122,48 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            <button className="text-gray-700 hover:text-fresh-600 transition-colors">
-              <User className="w-5 h-5" />
-            </button>
+            
+            {isAuthenticated ? (
+              <div className="relative flex items-center">
+                <Link 
+                  to={isAdmin ? "/admin" : "/account"} 
+                  className="text-gray-700 hover:text-fresh-600 transition-colors flex items-center"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="ml-2 text-sm">{user?.name}</span>
+                </Link>
+                
+                {isAdmin && (
+                  <Link 
+                    to="/admin" 
+                    className="ml-4 text-gray-700 hover:text-fresh-600 transition-colors flex items-center"
+                  >
+                    <Package className="w-5 h-5" />
+                    <span className="ml-1 text-sm">Admin</span>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <Button 
+                variant="ghost"
+                size="sm"
+                className="flex items-center text-gray-700 hover:text-fresh-600"
+                asChild
+              >
+                <Link to="/login">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Link>
+              </Button>
+            )}
+            
             <Button 
               className="bg-fresh-600 hover:bg-fresh-700 text-white px-5 py-2 rounded-full shadow-md btn-hover"
+              asChild
             >
-              Order Now
+              <Link to="/shop">
+                Order Now
+              </Link>
             </Button>
           </div>
 
@@ -205,18 +242,51 @@ const Navbar = () => {
               >
                 FAQ
               </Link>
-              <div className="flex items-center space-x-4 pt-2">
-                <button className="text-gray-700 hover:text-fresh-600 transition-colors">
-                  <Search className="w-5 h-5" />
-                </button>
-                <button className="text-gray-700 hover:text-fresh-600 transition-colors">
-                  <User className="w-5 h-5" />
-                </button>
-              </div>
+              
+              {isAuthenticated ? (
+                <>
+                  <Link 
+                    to={isAdmin ? "/admin" : "/account"}  
+                    className="font-medium py-2 flex items-center text-gray-700 hover:text-fresh-600"
+                  >
+                    <User className="w-5 h-5 mr-2" />
+                    {user?.name}
+                  </Link>
+                  
+                  {isAdmin && (
+                    <Link 
+                      to="/admin"  
+                      className="font-medium py-2 flex items-center text-gray-700 hover:text-fresh-600"
+                    >
+                      <Package className="w-5 h-5 mr-2" />
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  
+                  <button
+                    onClick={() => logout()}
+                    className="font-medium py-2 text-left text-red-600 hover:text-red-700"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link 
+                  to="/login" 
+                  className="font-medium py-2 flex items-center text-gray-700 hover:text-fresh-600"
+                >
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Login / Register
+                </Link>
+              )}
+              
               <Button 
                 className="bg-fresh-600 hover:bg-fresh-700 text-white mt-4 py-2 rounded-full shadow-md w-full"
+                asChild
               >
-                Order Now
+                <Link to="/shop">
+                  Order Now
+                </Link>
               </Button>
             </nav>
           </div>

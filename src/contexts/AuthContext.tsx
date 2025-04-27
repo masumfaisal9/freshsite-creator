@@ -6,11 +6,13 @@ interface User {
   id: string;
   email: string;
   name: string;
+  role: 'admin' | 'user';
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
@@ -28,7 +30,8 @@ export const useAuth = () => {
 
 // Demo users for testing
 const DEMO_USERS = [
-  { id: "1", email: "user@example.com", name: "Demo User", password: "password" }
+  { id: "1", email: "user@example.com", name: "Demo User", password: "password", role: "user" as const },
+  { id: "2", email: "admin@example.com", name: "Admin User", password: "admin123", role: "admin" as const }
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -88,7 +91,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // In a real app, this would be a server call
       // For demo, we'll just pretend it worked
-      const newUser = { id: `${DEMO_USERS.length + 1}`, name, email };
+      const newUser = { 
+        id: `${DEMO_USERS.length + 1}`, 
+        name, 
+        email, 
+        role: 'user' as const 
+      };
       setUser(newUser);
       localStorage.setItem("auth_user", JSON.stringify(newUser));
       toast.success("Account created successfully");
@@ -104,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider value={{
       user,
       isAuthenticated: !!user,
+      isAdmin: user?.role === 'admin',
       login,
       logout,
       register

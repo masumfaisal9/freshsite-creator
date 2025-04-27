@@ -5,14 +5,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { UserRound, ShoppingBag, Heart, CreditCard, LogOut, MapPin } from "lucide-react";
+import { UserRound, ShoppingBag, Heart, CreditCard, LogOut, MapPin, Package, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const Account = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const [profileForm, setProfileForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Mock order history
   const orders = [
@@ -24,12 +32,29 @@ const Account = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
+    } else {
+      setProfileForm({
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: "",
+      });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
   
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const handleProfileSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast.success("Profile updated successfully");
+    }, 1000);
   };
   
   if (!isAuthenticated) {
@@ -52,6 +77,11 @@ const Account = () => {
                 </div>
                 <h2 className="font-semibold text-gray-800">{user?.name}</h2>
                 <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
+                {isAdmin && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
+                    Admin
+                  </span>
+                )}
               </div>
               
               <hr className="my-4" />
@@ -87,15 +117,43 @@ const Account = () => {
                     Payment Methods
                   </Link>
                 </Button>
+                
+                {isAdmin && (
+                  <Button variant="ghost" className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50" asChild>
+                    <Link to="/admin">
+                      <Package className="mr-2 h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  </Button>
+                )}
+                
                 <hr className="my-2" />
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You will need to sign in again to access your account.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLogout} className="bg-red-600 hover:bg-red-700">
+                        Logout
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </nav>
             </div>
             
@@ -110,21 +168,53 @@ const Account = () => {
                 
                 <TabsContent value="profile" className="space-y-6">
                   <h3 className="text-xl font-semibold">Profile Information</h3>
-                  <div className="grid gap-6 max-w-md">
+                  <form onSubmit={handleProfileSubmit} className="grid gap-6 max-w-md">
                     <div className="space-y-2">
                       <Label htmlFor="fullName">Full Name</Label>
-                      <Input id="fullName" defaultValue={user?.name} />
+                      <Input 
+                        id="fullName" 
+                        value={profileForm.name} 
+                        onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                        required 
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="accountEmail">Email</Label>
-                      <Input id="accountEmail" defaultValue={user?.email} />
+                      <Input 
+                        id="accountEmail" 
+                        type="email"
+                        value={profileForm.email} 
+                        onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                        required 
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" placeholder="Add your phone number" />
+                      <Input 
+                        id="phone" 
+                        placeholder="Add your phone number" 
+                        value={profileForm.phone} 
+                        onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                      />
                     </div>
-                    <Button className="bg-fresh-600 hover:bg-fresh-700">Save Changes</Button>
-                  </div>
+                    <Button 
+                      type="submit" 
+                      className="bg-fresh-600 hover:bg-fresh-700" 
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Changes'
+                      )}
+                    </Button>
+                  </form>
                 </TabsContent>
                 
                 <TabsContent value="orders">
@@ -184,7 +274,8 @@ const Account = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
+                      <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
+                      <p className="text-gray-500 mt-4 mb-4">You haven't placed any orders yet.</p>
                       <Button asChild>
                         <Link to="/shop">Start Shopping</Link>
                       </Button>
@@ -209,9 +300,27 @@ const Account = () => {
                       </p>
                       <div className="mt-4 flex space-x-2">
                         <Button variant="outline" size="sm">Edit</Button>
-                        <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">
-                          Remove
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">
+                              Remove
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Address</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this address? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction className="bg-red-600 hover:bg-red-700">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                     
